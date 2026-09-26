@@ -1,22 +1,24 @@
 # Bangladesh District & Upazila Seed Data for Django
 
-A reusable Django management command for creating Bangladesh district and upazila data in your Django project.
+A reusable Django management command for creating Bangladesh district and upazila data in a Django project.
 
-## What is included
+This repository provides a simple way to add district and upazila data to a Django database without manually entering the locations one by one.
 
-This repository provides:
+## Features
 
 * Bangladesh district data
 * Bangladesh upazila data
-* Django management command for seeding the data
-* Simple copy-and-use setup
-* Duplicate-safe database insertion
+* Django management command
+* Duplicate-safe data insertion
+* Easy copy-and-use setup
+* Suitable for Django projects that need Bangladesh location data
 
 ## Requirements
 
 * Python 3.10+
 * Django 4.2+
-* A Django project with `District` and `Upazila` models
+* A Django project
+* `District` and `Upazila` models
 
 ## Installation
 
@@ -24,7 +26,7 @@ You do not need to install this repository as a Python package.
 
 Simply copy the `management` folder from this repository into the Django app that contains your `District` and `Upazila` models.
 
-Your app structure should look like this:
+Your Django app should look similar to this:
 
 ```text
 your_project/
@@ -45,54 +47,55 @@ your_project/
 
 ## 1. Copy the management folder
 
-Copy:
+Copy the `management` folder from this repository:
 
 ```text
 management/
+├── __init__.py
 └── commands/
+    ├── __init__.py
     └── seed_locations.py
 ```
 
-into the Django app where your `District` and `Upazila` models are located.
+Paste it inside the Django app where your `District` and `Upazila` models are located.
 
 For example:
 
 ```text
-your_app/
-├── models.py
-└── management/
-    └── commands/
-        └── seed_locations.py
+your_project/
+│
+└── core/
+    ├── models.py
+    │
+    └── management/
+        ├── __init__.py
+        └── commands/
+            ├── __init__.py
+            └── seed_locations.py
 ```
 
 ## 2. Check the model import
 
-Open:
-
-```text
-management/commands/seed_locations.py
-```
-
-Find the model import.
-
-For example:
-
-```python
-from your_app.models import District, Upazila
-```
-
-Replace `your_app` with the actual Django app name containing your models.
-
-For example, if your app is named `core`:
+The included `seed_locations.py` uses:
 
 ```python
 from core.models import District, Upazila
 ```
 
-If your app is named `food`:
+In this repository, `core` is used as the example Django app name.
+
+If your `District` and `Upazila` models are located in another app, update the import according to your project.
+
+For example, if your app is named `food`:
 
 ```python
 from food.models import District, Upazila
+```
+
+If your app is named `locations`:
+
+```python
+from locations.models import District, Upazila
 ```
 
 ## 3. Make sure your models exist
@@ -127,18 +130,33 @@ class Upazila(models.Model):
         return self.name
 ```
 
-Your existing models may use different field names. In that case, update `seed_locations.py` accordingly.
+Your models do not have to be exactly the same, but the field names and relationships used by `seed_locations.py` must match your models.
 
-## 4. Run migrations
+## 4. Make sure the Django app is installed
 
-After creating or updating your models:
+The app containing the `management` folder must be included in `INSTALLED_APPS` in your Django settings.
+
+For example:
+
+```python
+INSTALLED_APPS = [
+    ...
+    "core",
+]
+```
+
+If your app has a different name, use that app name instead.
+
+## 5. Run migrations
+
+After creating or updating your models, run:
 
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-## 5. Run the seed command
+## 6. Run the seed command
 
 Run:
 
@@ -148,49 +166,58 @@ python manage.py seed_locations
 
 The command will create the district and upazila records in your database.
 
-## Django app structure
+## Project Structure Example
 
-Make sure the app containing the management command is included in:
+A complete example may look like:
 
-```python
-INSTALLED_APPS
-```
-
-in your Django settings.
-
-For example:
-
-```python
-INSTALLED_APPS = [
-    ...
-    "your_app",
-]
+```text
+your_project/
+│
+├── manage.py
+│
+├── your_project/
+│   ├── settings.py
+│   ├── urls.py
+│   └── ...
+│
+└── core/
+    ├── models.py
+    ├── views.py
+    │
+    └── management/
+        ├── __init__.py
+        └── commands/
+            ├── __init__.py
+            └── seed_locations.py
 ```
 
 ## Important
 
-This repository contains the reusable management command, not a complete Django project.
+This repository contains the reusable Django management command, not a complete Django project.
 
 You are responsible for:
 
-* Creating the Django project
+* Creating your own Django project
 * Creating the `District` and `Upazila` models
 * Running migrations
-* Updating model imports
-* Updating views, serializers, forms, or URLs according to your own project structure
+* Making sure the app is included in `INSTALLED_APPS`
+* Updating the model import in `seed_locations.py` if necessary
+* Updating views, forms, serializers, URLs, or other project-specific code according to your own project structure
 
-## Data source
+## Data Status
 
-Bangladesh's administrative structure can change over time. Always verify district and upazila names against current official Bangladesh government sources before using the data in a production application.
+Bangladesh's administrative structure can change over time.
+
+District and upazila names or administrative boundaries may be changed by the relevant authorities. Always verify the current administrative information against official Bangladesh government sources before using the data in a production application.
 
 ## License
 
 The code in this repository is released under the MIT License.
 
-The MIT License applies to the code in this repository. Administrative data may have separate provenance or usage considerations, so verify the applicable official sources and terms when redistributing or using the data.
+The MIT License applies to the code in this repository. Administrative data may have separate provenance or usage considerations, so users should verify the applicable official sources and terms when redistributing or using the data.
 
 ## Contributing
 
-Pull requests and corrections are welcome.
+Corrections and improvements are welcome.
 
-If an administrative name or structure changes, please provide a reliable official source with the proposed update.
+If you find an incorrect or outdated district or upazila entry, please provide a reliable official source when submitting an issue or pull request.
